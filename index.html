@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Decimal Operations Quiz</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #d6f0ff;
+  text-align: center;
+}
+
+.quiz-box {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 60%;
+  margin: auto;
+  margin-top: 50px;
+}
+
+button {
+  background: #fff5b1;
+  border: none;
+  padding: 10px;
+  margin: 8px;
+  width: 80%;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.correct { background: lightgreen; }
+.wrong { background: #ff9e9e; }
+
+#result {
+  display: none;
+  font-size: 24px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="quiz-box">
+<h2>🔢 Decimal Operations Quiz</h2>
+<p id="question"></p>
+<div id="options"></div>
+</div>
+
+<div id="result"></div>
+
+<audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+<audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+<script>
+
+let questions = [
+
+/* MULTIPLICATION */
+{q:"223.7 × 10 = ?",a:2237},
+{q:"223.7 × 100 = ?",a:22370},
+{q:"223.7 × 1000 = ?",a:223700},
+
+{q:"45.6 × 10 = ?",a:456},
+{q:"45.6 × 100 = ?",a:4560},
+{q:"45.6 × 1000 = ?",a:45600},
+
+{q:"9.81 × 10 = ?",a:98.1},
+{q:"9.81 × 100 = ?",a:981},
+{q:"9.81 × 1000 = ?",a:9810},
+
+{q:"12.34 × 10 = ?",a:123.4},
+{q:"12.34 × 100 = ?",a:1234},
+{q:"12.34 × 1000 = ?",a:12340},
+
+{q:"7.5 × 10 = ?",a:75},
+{q:"7.5 × 100 = ?",a:750},
+{q:"7.5 × 1000 = ?",a:7500},
+
+{q:"98.2 × 10 = ?",a:982},
+{q:"56.78 × 100 = ?",a:5678},
+{q:"3.45 × 1000 = ?",a:3450},
+
+/* DIVISION */
+{q:"223.7 ÷ 10 = ?",a:22.37},
+{q:"223.7 ÷ 100 = ?",a:2.237},
+{q:"223.7 ÷ 1000 = ?",a:0.2237},
+
+{q:"45.6 ÷ 10 = ?",a:4.56},
+{q:"45.6 ÷ 100 = ?",a:0.456},
+{q:"45.6 ÷ 1000 = ?",a:0.0456},
+
+{q:"9.81 ÷ 10 = ?",a:0.981},
+{q:"9.81 ÷ 100 = ?",a:0.0981},
+{q:"9.81 ÷ 1000 = ?",a:0.00981},
+
+{q:"12.34 ÷ 10 = ?",a:1.234},
+{q:"12.34 ÷ 100 = ?",a:0.1234},
+{q:"12.34 ÷ 1000 = ?",a:0.01234},
+
+{q:"7.5 ÷ 10 = ?",a:0.75},
+{q:"98.2 ÷ 100 = ?",a:0.982},
+{q:"56.78 ÷ 1000 = ?",a:0.05678},
+{q:"3.45 ÷ 100 = ?",a:0.0345}
+
+];
+
+let current = 0;
+let score = 0;
+
+function generateOptions(correct){
+  let options = new Set();
+  options.add(correct);
+
+  while(options.size < 4){
+    let rand = (Math.random() * correct * 2).toFixed(4);
+    options.add(Number(rand));
+  }
+
+  return [...options].sort(()=>Math.random()-0.5);
+}
+
+function loadQuestion(){
+  if(current >= questions.length){
+    showResult();
+    return;
+  }
+
+  let q = questions[current];
+  document.getElementById("question").innerText = (current+1) + ". " + q.q;
+
+  let opts = generateOptions(q.a);
+
+  let html = "";
+  opts.forEach(opt=>{
+    html += `<button onclick="checkAnswer(this,${q.a})">${opt}</button>`;
+  });
+
+  document.getElementById("options").innerHTML = html;
+}
+
+function checkAnswer(btn, correct){
+  let buttons = document.querySelectorAll("button");
+  buttons.forEach(b=>b.disabled=true);
+
+  if(Number(btn.innerText) === correct){
+    btn.classList.add("correct");
+    document.getElementById("correctSound").play();
+    score++;
+  } else {
+    btn.classList.add("wrong");
+    document.getElementById("wrongSound").play();
+  }
+
+  setTimeout(()=>{
+    current++;
+    loadQuestion();
+  },1000);
+}
+
+function showResult(){
+  document.querySelector(".quiz-box").style.display="none";
+  let res = document.getElementById("result");
+  res.style.display="block";
+
+  let msg = score>=30 ? "🌟 Excellent!" :
+            score>=20 ? "👏 Great Job!" :
+            score>=10 ? "👍 Good!" :
+            "💪 Keep Practicing!";
+
+  res.innerHTML = `
+  ${msg} <br><br>
+  Your Score: <b>${score} / ${questions.length}</b>
+  `;
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
